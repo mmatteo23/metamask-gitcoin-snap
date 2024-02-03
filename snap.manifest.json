@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "description": "A simple Gitcoin passport Snap to get info about transaction receiver.",
+  "proposedName": "Gitcoin Analytics",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+  },
+  "source": {
+    "shasum": "gI8ophJwqULWL7R2NeRfCI9YMGW+E3hfi85EGjPl7E4=",
+    "location": {
+      "npm": {
+        "filePath": "dist/bundle.js",
+        "iconPath": "images/icon.svg",
+        "packageName": "snap",
+        "registry": "https://registry.npmjs.org/"
+      }
+    }
+  },
+  "initialPermissions": {
+    "snap_dialog": {},
+    "endowment:rpc": {
+      "dapps": true,
+      "snaps": false
+    },
+    "endowment:transaction-insight": {},
+    "endowment:ethereum-provider": {},
+    "endowment:network-access": {},
+    "endowment:page-home": {},
+    "snap_manageState": {}
+  },
+  "manifestVersion": "0.1"
+}
