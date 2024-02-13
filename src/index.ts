@@ -1,18 +1,12 @@
-import type { OnHomePageHandler, OnInstallHandler } from '@metamask/snaps-sdk';
+import type { OnHomePageHandler } from '@metamask/snaps-sdk';
 import {
-  type OnRpcRequestHandler,
   type OnTransactionHandler,
 } from '@metamask/snaps-sdk';
 import { heading, panel, text, divider } from '@metamask/snaps-ui';
 
-import SnapStorage from './SnapStorage';
 import type {
-  GitcoinStampItem,
-  LoadApiKeyParams,
-  StampMetadata,
   StampOutput,
 } from './types';
-import { isValidLoadApiKeyRequest } from './utils';
 
 /**
  * Handle incoming JSON-RPC requests, sent through `wallet_invokeSnap`.
@@ -24,45 +18,45 @@ import { isValidLoadApiKeyRequest } from './utils';
  * @returns The result of `snap_dialog`.
  * @throws If the request method is not valid for this snap.
  */
-export const onRpcRequest: OnRpcRequestHandler = async ({
-  origin,
-  request,
-}) => {
-  const { method, params } = request;
-  switch (method) {
-    case 'hello':
-      return snap.request({
-        method: 'snap_dialog',
-        params: {
-          type: 'confirmation',
-          content: panel([
-            text(`Hello, **${origin}**!`),
-            text('This custom confirmation is just for display purposes.'),
-            text(
-              'But you can edit the snap source code to make it do something, if you want to!',
-            ),
-          ]),
-        },
-      });
-    case 'loadApiKey':
-      isValidLoadApiKeyRequest(params as LoadApiKeyParams);
-      await SnapStorage.save({
-        apiKey: (params as LoadApiKeyParams).apiKey,
-      });
-      return snap.request({
-        method: 'snap_dialog',
-        params: {
-          type: 'alert',
-          content: panel([
-            heading('API key loaded!'),
-            text('You can now use the snap .'),
-          ]),
-        },
-      });
-    default:
-      throw new Error('Method not found.');
-  }
-};
+// export const onRpcRequest: OnRpcRequestHandler = async ({
+//   origin,
+//   request,
+// }) => {
+//   const { method, params } = request;
+//   switch (method) {
+//     case 'hello':
+//       return snap.request({
+//         method: 'snap_dialog',
+//         params: {
+//           type: 'confirmation',
+//           content: panel([
+//             text(`Hello, **${origin}**!`),
+//             text('This custom confirmation is just for display purposes.'),
+//             text(
+//               'But you can edit the snap source code to make it do something, if you want to!',
+//             ),
+//           ]),
+//         },
+//       });
+//     case 'loadApiKey':
+//       isValidLoadApiKeyRequest(params as LoadApiKeyParams);
+//       await SnapStorage.save({
+//         apiKey: (params as LoadApiKeyParams).apiKey,
+//       });
+//       return snap.request({
+//         method: 'snap_dialog',
+//         params: {
+//           type: 'alert',
+//           content: panel([
+//             heading('API key loaded!'),
+//             text('You can now use the snap .'),
+//           ]),
+//         },
+//       });
+//     default:
+//       throw new Error('Method not found.');
+//   }
+// };
 
 export const onHomePage: OnHomePageHandler = async () => {
   return {
@@ -76,94 +70,22 @@ export const onHomePage: OnHomePageHandler = async () => {
   };
 };
 
-export const onInstall: OnInstallHandler = async () => {
-  console.log('EXECUTING onInstall');
-  await snap.request({
-    method: 'snap_dialog',
-    params: {
-      type: 'alert',
-      content: panel([
-        heading('Thank you for installing Gitcoin Analytics Snap!'),
-        text(
-          "You're almost there! Now you have to load your API key to allow the snap calling the Gitcoin API.",
-        ),
-      ]),
-    },
-  });
-};
-
 // Handle outgoing transactions.
 export const onTransaction: OnTransactionHandler = async ({ transaction }) => {
-  console.log('transaction', transaction);
   try {
-    const snapState = (await SnapStorage.load()) as
-      | LoadApiKeyParams
-      | undefined;
-    console.log('snapState', snapState);
-    if (!snapState || snapState.apiKey === undefined) {
-      throw new Error(
-        'You need to load the API key first. Please go to the snap site and load the API key.',
-      );
-    }
-    const GITCOIN_BASE_URL = 'https://api.scorer.gitcoin.co/registry';
-    const GITCOIN_API_KEY = snapState.apiKey;
+    const response = await fetch(`https://gitcoin-metamask-snap-api.onrender.com/score?receiver=${transaction.to}`);
+    const score_result: {
+      stampsCount: number;
+      stampsToPlatform: StampOutput;
+      addressScore: number;
+    } = await response.json();
 
-    console.log('GITCOIN_BASE_URL', GITCOIN_BASE_URL);
-    console.log('GITCOIN_API_KEY', GITCOIN_API_KEY);
-
-    if (!GITCOIN_BASE_URL || !GITCOIN_API_KEY) {
-      throw new Error('Missing .env variables');
-    }
-
-    const response = await fetch(
-      `${GITCOIN_BASE_URL}/stamps/${transaction.to}?limit=1000&include_metadata=true`,
-      {
-        method: 'GET',
-        headers: {
-          'X-API-KEY': GITCOIN_API_KEY,
-        },
-      },
-    );
-
-    const stamps = await response.json();
-    // console.log('stamps', JSON.stringify(stamps));
-
-    // items from the response
-    const { items } = stamps;
-
-    // extract metadata from each item and create an array to show in the UI
-    const metadata: StampMetadata[] = items.map(
-      (item: GitcoinStampItem) => item.metadata,
-    );
-
-    // create a dynamic object to count the number of stamps for each platform
-    const connectedServices: StampOutput = {};
-    for (const item of metadata) {
-      if (item) {
-        if (!connectedServices[item.platform.id]) {
-          connectedServices[item.platform.id] = {
-            [item.group]: {
-              stamps: [item.description],
-            },
-          };
-        } else if (connectedServices[item.platform.id][item.group]) {
-          connectedServices[item.platform.id][item.group]?.stamps.push(
-            item.description,
-          );
-        } else {
-          connectedServices[item.platform.id][item.group] = {
-            stamps: [item.description],
-          };
-        }
-      }
-    }
-
-    console.log('connectedServices', JSON.stringify(connectedServices));
+    const { stampsCount, stampsToPlatform, addressScore } = score_result;
 
     // create a panel with a text for each connected service
     const stampsData = [];
-    stampsData.push(heading('Receiver Snap Details'));
-    for (const [platform, stampsGroup] of Object.entries(connectedServices)) {
+    stampsData.push(heading('Receiver\'s Snaps Metadata'));
+    for (const [platform, stampsGroup] of Object.entries(stampsToPlatform)) {
       stampsData.push(text(`**Platform**: ${platform}`));
       for (const [group, stampsArray] of Object.entries(stampsGroup)) {
         stampsData.push(text(`**Group**: ${group}`));
@@ -178,14 +100,14 @@ export const onTransaction: OnTransactionHandler = async ({ transaction }) => {
       }
       stampsData.push(divider());
     }
-    console.log('stampsData', JSON.stringify(stampsData));
 
     return {
       content: panel([
         panel([
           heading('Transaction insights Snap'),
           text(`Gitcoin analytics for **${transaction.to}**`),
-          text(`Number of stamps: ${metadata.length}`),
+          text(`Address score: **${addressScore}**`),
+          text(`Total number of stamps: **${stampsCount}**`),
         ]),
         divider(),
         panel(stampsData),
