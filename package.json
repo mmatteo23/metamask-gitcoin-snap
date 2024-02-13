@@ -1,12 +1,12 @@
 {
-  "name": "snap",
+  "name": "gitcoin-snap",
   "version": "0.1.0",
-  "description": "The 'Hello, world!' of MetaMask Snaps, now written in TypeScript.",
+  "description": "Gitcoin Metamask Snap. Get stats on who you're sending money to directly on Metamask",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/mmatteo23/metamask-gitcoin-snap.git"
   },
-  "license": "(MIT-0 OR Apache-2.0)",
+  "license": "MIT-0",
   "main": "./dist/bundle.js",
   "files": [
     "dist/",
