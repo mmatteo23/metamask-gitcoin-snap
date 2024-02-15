@@ -29,7 +29,7 @@
 <p align="center">· &nbsp&nbsp&nbsp· &nbsp&nbsp&nbsp·</p>
 
 <p align="center">
-<b>Sybil-resistant</b> transactions. Get stats on who you're sending money to directly on Metamask.
+Enabling <b>KYR (Know Your Receiver)</b> transactions. Get stats on who you're sending money to directly on Metamask.
 </p>
 
 <p align="center">· &nbsp&nbsp&nbsp· &nbsp&nbsp&nbsp·</p>
@@ -45,7 +45,7 @@ Using Gitcoin Snap you can have stats about receiver of your transactions. Curre
 
 ### Prerequisites
 
-- [MetaMask](https://metamask.io/)
+- [MetaMask Flask](https://docs.metamask.io/snaps/get-started/install-flask/)
   - ⚠️ You need a version of MetaMask that supports Snaps
 - Node.js `18`. I **strongly** recommend you install via [NVM](https://github.com/creationix/nvm) to avoid incompatibility issues between different node projects.
 
