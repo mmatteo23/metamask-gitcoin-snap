@@ -1,6 +1,6 @@
 {
   "name": "@midenaeth/gitcoin-analytics-snap",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Gitcoin Metamask Snap. Get stats on who you're sending money to directly on Metamask",
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A simple Gitcoin passport Snap to get info about transaction receiver.",
   "proposedName": "Gitcoin Snap Analytics",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/mmatteo23/metamask-gitcoin-snap.git"
   },
   "source": {
-    "shasum": "H5pPkI1X6lEXDioZzoLYAlBmhfOKNS5b46SwMkruuJs=",
+    "shasum": "PKdWtZrS01Q8lI+H2BuW35ztHrLoWbOTAF5V8JfS7E4=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
