@@ -1,9 +1,7 @@
 <div id="logo" align="center" style="width: 100px;">
 
   <a href="https://www.gitcoin.co/passport">
-
-  ![Passport logo](https://assets-global.website-files.com/6433c5d029c6bb75f3f00bd5/64e62b457ae551fc732123e5_passport-backround-logo.svg)
-
+  <img src="https://assets-global.website-files.com/6433c5d029c6bb75f3f00bd5/64e62b457ae551fc732123e5_passport-backround-logo.svg" width="150" alt="Passport logo">
   </a>
   <h1>
 	  Gitcoin Passport Analytics Snap
